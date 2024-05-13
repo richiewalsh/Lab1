@@ -1,16 +1,10 @@
 #include "mbed.h"
 #include <cstdio>
 /*
-Error in output:
-++ MbedOS Error Info ++
-Error Status: 0x80010133 Code: 307 Module: 1
-Error Message: Mutex: 0x200015FC, Not allowed in ISR context
-Location: 0x8009371
-Error Value: 0x200015FC
-Current Thread: main Id: 0x20001DB8 Entry: 0x8006943 StackSize: 0x1000 StackMem: 0x20000580 SP: 0x2009FF4C 
-For more info, visit: https://mbed.com/s/error?error=0x80010133&tgt=B_L4S5I_IOT01A
--- MbedOS Error Info --
-
+I tried moving the btn.fall(&fall) around in the main but it either didnt get rid of 
+the error or caused the loop to never be entered.
+By taking the printf statement out of the fall function and putting the btn.fall(&fall)
+back at the start of the main, I get the desired output.
 */
 // Initialise variables
 InterruptIn btn(PC_13);
@@ -18,8 +12,6 @@ volatile int flag = 0; //Volatile necessary so that flag value is consistent and
 
 // define function for when button has been pressed
 void fall(){
-
-printf("Button has been pressed\n");
 // cause activation of the if loop in main when function has been triggered
 flag = 1;
 
@@ -31,10 +23,10 @@ int main()
     // Call function when button is pressed
     btn.fall(&fall);
     while (true) {
-
+        // enter loop when flag gets set by fall function
         if(flag == 1){
 
-            printf("Button has been pressed\n");
+            printf("Button has been pressed.\r\n");
             // reset flag
             flag = 0;
         }
